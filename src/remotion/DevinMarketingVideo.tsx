@@ -7,7 +7,7 @@ import {
 	Sequence,
 } from 'remotion';
 import {z} from 'zod';
-import {AudioCue} from '@/components/remotion/Audio';
+import {AudioCue} from '../components/remotion/Audio';
 import './styles.css';
 
 // Schema for props

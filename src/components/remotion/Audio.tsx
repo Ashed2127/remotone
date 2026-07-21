@@ -1,7 +1,7 @@
 import React, { useEffect, useRef } from 'react';
 import { useCurrentFrame, useAudioData } from 'remotion';
 import { z } from 'zod';
-import { audioGenerator } from '@/lib/audio-generator';
+import { audioGenerator } from '../../lib/audio-generator';
 
 export const AudioSchema = z.object({
   id: z.string().uuid(),

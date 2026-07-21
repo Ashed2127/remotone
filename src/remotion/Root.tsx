@@ -5,6 +5,7 @@ import {DevinHyperMotionVideo} from './DevinHyperMotionVideo';
 import {DevinInActionVideo} from './DevinInActionVideo';
 import {AppkitMotionVideo} from './AppkitMotionVideo';
 import {SaveOpenAIVideo} from './SaveOpenAIVideo';
+import {ChatGPTPromoVideo} from './ChatGPTPromoVideo';
 
 export const RemotionRoot: React.FC = () => {
 	return (
@@ -78,6 +79,17 @@ export const RemotionRoot: React.FC = () => {
 			<Composition
 				id="SaveOpenAIVideo"
 				component={SaveOpenAIVideo}
+				durationInFrames={600} // 20 seconds at 30fps
+				fps={30}
+				width={1920}
+				height={1080}
+				defaultProps={{
+					// Add any default props here
+				}}
+			/>
+			<Composition
+				id="ChatGPTPromoVideo"
+				component={ChatGPTPromoVideo}
 				durationInFrames={600} // 20 seconds at 30fps
 				fps={30}
 				width={1920}

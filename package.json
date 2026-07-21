@@ -24,7 +24,9 @@
     "video:appkit:render": "remotion render src/remotion/index.ts AppkitMotionVideo appkit-motion-video.mp4",
     "video:appkit:preview": "remotion render src/remotion/index.ts AppkitMotionVideo appkit-motion-video.mp4 --preview",
     "video:saveopenai:render": "remotion render src/remotion/index.ts SaveOpenAIVideo save-openai-video.mp4",
-    "video:saveopenai:preview": "remotion render src/remotion/index.ts SaveOpenAIVideo save-openai-video.mp4 --preview"
+    "video:saveopenai:preview": "remotion render src/remotion/index.ts SaveOpenAIVideo save-openai-video.mp4 --preview",
+    "video:chatgpt:render": "remotion render src/remotion/index.ts ChatGPTPromoVideo chatgpt-promo-video.mp4",
+    "video:chatgpt:preview": "remotion render src/remotion/index.ts ChatGPTPromoVideo chatgpt-promo-video.mp4 --preview"
   },
   "keywords": [],
   "author": "",

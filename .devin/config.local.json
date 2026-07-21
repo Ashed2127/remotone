@@ -6,7 +6,10 @@
       "Exec(cp)",
       "Exec(git status)",
       "Exec(git remote)",
-      "Exec(git add)"
+      "Exec(git add)",
+      "Exec(git commit)",
+      "Exec(git branch)",
+      "Exec(git push)"
     ]
   }
 }
