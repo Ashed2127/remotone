@@ -1,5 +1,5 @@
 import React, { useEffect, useRef } from 'react';
-import { useCurrentFrame, useAudioData } from 'remotion';
+import { useCurrentFrame } from 'remotion';
 import { z } from 'zod';
 import { audioGenerator } from '../../lib/audio-generator';
 

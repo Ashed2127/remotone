@@ -6,6 +6,7 @@ import {DevinInActionVideo} from './DevinInActionVideo';
 import {AppkitMotionVideo} from './AppkitMotionVideo';
 import {SaveOpenAIVideo} from './SaveOpenAIVideo';
 import {ChatGPTPromoVideo} from './ChatGPTPromoVideo';
+import EnhancedVideo from './EnhancedVideo';
 
 export const RemotionRoot: React.FC = () => {
 	return (
@@ -96,6 +97,27 @@ export const RemotionRoot: React.FC = () => {
 				height={1080}
 				defaultProps={{
 					// Add any default props here
+				}}
+			/>
+			<Composition
+				id="EnhancedVideo"
+				component={EnhancedVideo}
+				durationInFrames={600} // 20 seconds at 30fps
+				fps={30}
+				width={1920}
+				height={1080}
+				defaultProps={{
+					assets: [],
+					brandName: 'Your Brand',
+					tagline: 'Your Tagline',
+					website: 'https://yourbrand.com',
+					brandColors: ['#667eea', '#764ba2'],
+					mood: 'professional',
+					style: 'cinematic',
+					duration: 20,
+					features: [],
+					metrics: [],
+					socialLinks: [],
 				}}
 			/>
 		</>

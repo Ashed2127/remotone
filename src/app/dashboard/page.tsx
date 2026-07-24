@@ -153,7 +153,7 @@ export default function Dashboard() {
                   onChange={(e) => setPrompt(e.target.value)}
                   placeholder="Describe your video idea... (e.g., 'A 30-second promotional video with dramatic transitions and upbeat music')"
                   className="w-full px-4 py-3 bg-gray-800 border border-gray-700 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-transparent transition-all text-white placeholder-gray-500"
-                  rows="4"
+                  rows={4}
                   disabled={isGenerating}
                 />
               </div>
