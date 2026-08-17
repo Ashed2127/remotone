@@ -22,13 +22,24 @@ const ProfessionalVideoEditorDemoWithAudio: React.FC<Props> = ({
   const frame = useCurrentFrame();
   const { fps, durationInFrames } = useVideoConfig();
   const totalDuration = durationInFrames / fps; // 15 seconds
+  
+  // Simulated audio reactivity based on frame timing
+  // This creates synchronized patterns that match the music rhythm
+  const audioBeat = Math.sin(frame / 10) * 0.5 + 0.5; // Main beat
+  const audioHighFreq = Math.sin(frame / 5) * 0.5 + 0.5; // High frequency
+  const audioLowFreq = Math.sin(frame / 20) * 0.5 + 0.5; // Low frequency
+  const audioComplex = (audioBeat + audioHighFreq + audioLowFreq) / 3; // Complex waveform
 
-  // Professional step timings
-  const step1Duration = 3; // Cinematic intro with music
-  const step2Duration = 3; // Setup with sound effects
-  const step3Duration = 3; // Integration with transition sounds
-  const step4Duration = 3; // Generation with progress audio
-  const step5Duration = 3; // Final result with climax music
+  // Professional step timings with extended transitions
+  const step1Duration = 3.5; // Cinematic intro with music
+  const step2Duration = 3.5; // Setup with sound effects
+  const step3Duration = 3.5; // Integration with transition sounds
+  const step4Duration = 3.5; // Generation with progress audio
+  const step5Duration = 5; // Final result with climax music (extended for finale)
+  
+  // Extended transition durations for smoother effects
+  const transitionDuration = 0.8; // 0.8 second transitions for smoother feel
+  const transitionFrames = transitionDuration * fps;
 
   const step1End = step1Duration * fps;
   const step2End = step1End + step2Duration * fps;
@@ -36,7 +47,7 @@ const ProfessionalVideoEditorDemoWithAudio: React.FC<Props> = ({
   const step4End = step3End + step4Duration * fps;
   const step5End = step4End + step5Duration * fps;
 
-  // Advanced easing functions
+  // Advanced easing functions for smoother transitions
   const easeOutExpo = (t: number) => t === 1 ? 1 : 1 - Math.pow(2, -10 * t);
   const easeInOutCubic = (t: number) => t < 0.5 ? 4 * t * t * t : 1 - Math.pow(-2 * t + 2, 3) / 2;
   const easeOutBack = (t: number) => {
@@ -44,47 +55,88 @@ const ProfessionalVideoEditorDemoWithAudio: React.FC<Props> = ({
     const c3 = c1 + 1;
     return 1 + c3 * Math.pow(t - 1, 3) + c1 * Math.pow(t - 1, 2);
   };
+  const easeInOutQuart = (t: number) => t < 0.5 ? 8 * t * t * t * t : 1 - Math.pow(-2 * t + 2, 4) / 2;
+  const easeOutCirc = (t: number) => Math.sqrt(1 - Math.pow(t - 1, 2));
+  const easeInOutElastic = (t: number) => {
+    const c5 = (2 * Math.PI) / 4.5;
+    return t === 0 ? 0 : t === 1 ? 1 : t < 0.5
+      ? -(Math.pow(2, 20 * t - 10) * Math.sin((20 * t - 11.125) * c5)) / 2
+      : (Math.pow(2, -20 * t + 10) * Math.sin((20 * t - 11.125) * c5)) / 2 + 1;
+  };
 
-  // Animation helpers
+  // Animation helpers with advanced easing
   const advancedFadeIn = (start: number, end: number) => 
-    easeOutExpo(interpolate(frame, [start, end], [0, 1], { extrapolateRight: 'clamp', extrapolateLeft: 'clamp' }));
+    easeInOutQuart(interpolate(frame, [start, end], [0, 1], { extrapolateRight: 'clamp', extrapolateLeft: 'clamp' }));
   
   const advancedFadeOut = (start: number, end: number) => 
-    easeOutExpo(interpolate(frame, [start, end], [1, 0], { extrapolateLeft: 'clamp', extrapolateRight: 'clamp' }));
+    easeInOutQuart(interpolate(frame, [start, end], [1, 0], { extrapolateLeft: 'clamp', extrapolateRight: 'clamp' }));
 
   const advancedSlideUp = (start: number, end: number) => 
     easeOutBack(interpolate(frame, [start, end], [100, 0], { extrapolateRight: 'clamp', extrapolateLeft: 'clamp' }));
 
   const advancedScale = (start: number, end: number) => 
-    easeInOutCubic(interpolate(frame, [start, end], [0.5, 1], { extrapolateRight: 'clamp', extrapolateLeft: 'clamp' }));
+    easeInOutElastic(interpolate(frame, [start, end], [0.8, 1], { extrapolateRight: 'clamp', extrapolateLeft: 'clamp' }));
 
-  // Particle system
-  const particles = Array.from({ length: 25 }, (_, i) => ({
-    x: Math.sin(frame / 25 + i * 0.5) * 250,
-    y: Math.cos(frame / 20 + i * 0.3) * 180,
-    size: 3 + Math.sin(frame / 12 + i) * 2,
-    opacity: 0.4 + Math.sin(frame / 18 + i * 0.4) * 0.3,
-    color: i % 3 === 0 ? brandColor : i % 3 === 1 ? accentColor : secondaryColor
-  }));
+  const smoothSlideIn = (start: number, end: number) => 
+    easeOutCirc(interpolate(frame, [start, end], [-50, 0], { extrapolateRight: 'clamp', extrapolateLeft: 'clamp' }));
 
-  // Audio visualization (simulated for visual)
-  const audioBars = Array.from({ length: 16 }, (_, i) => {
-    const amplitude = Math.sin(frame / 10 + i * 0.5) * 0.5 + 0.5;
+  const smoothZoom = (start: number, end: number) => 
+    easeInOutCubic(interpolate(frame, [start, end], [0.9, 1], { extrapolateRight: 'clamp', extrapolateLeft: 'clamp' }));
+
+  // Dynamic slide transitions - simplified to percentages
+  const slideFromRight = (start: number, end: number) => 
+    easeInOutCubic(interpolate(frame, [start, end], [100, 0], { extrapolateRight: 'clamp', extrapolateLeft: 'clamp' }));
+  
+  const slideFromLeft = (start: number, end: number) => 
+    easeInOutCubic(interpolate(frame, [start, end], [-100, 0], { extrapolateRight: 'clamp', extrapolateLeft: 'clamp' }));
+  
+  const slideFromBottom = (start: number, end: number) => 
+    easeInOutCubic(interpolate(frame, [start, end], [100, 0], { extrapolateRight: 'clamp', extrapolateLeft: 'clamp' }));
+  
+  const slideFromTop = (start: number, end: number) => 
+    easeInOutCubic(interpolate(frame, [start, end], [-100, 0], { extrapolateRight: 'clamp', extrapolateLeft: 'clamp' }));
+  
+  const slideToRight = (start: number, end: number) => 
+    easeInOutCubic(interpolate(frame, [start, end], [0, 100], { extrapolateRight: 'clamp', extrapolateLeft: 'clamp' }));
+  
+  const slideToLeft = (start: number, end: number) => 
+    easeInOutCubic(interpolate(frame, [start, end], [0, -100], { extrapolateRight: 'clamp', extrapolateLeft: 'clamp' }));
+
+  // Particle system with audio reactivity and transition effects
+  const particles = Array.from({ length: 30 }, (_, i) => {
+    const transitionScale = (frame >= step1End - transitionFrames && frame <= step1End + transitionFrames) ||
+                           (frame >= step2End - transitionFrames && frame <= step2End + transitionFrames) ||
+                           (frame >= step3End - transitionFrames && frame <= step3End + transitionFrames) ||
+                           (frame >= step4End - transitionFrames && frame <= step4End + transitionFrames)
+                           ? 1.5 : 1;
+    
     return {
-      height: 20 + amplitude * 40,
-      opacity: 0.3 + amplitude * 0.4
+      x: Math.sin(frame / 25 + i * 0.5) * 250,
+      y: Math.cos(frame / 20 + i * 0.3) * 180,
+      size: (3 + Math.sin(frame / 12 + i) * 2 + audioComplex * 3) * transitionScale,
+      opacity: (0.4 + Math.sin(frame / 18 + i * 0.4) * 0.3 + audioComplex * 0.2) * transitionScale,
+      color: i % 3 === 0 ? brandColor : i % 3 === 1 ? accentColor : secondaryColor
+    };
+  });
+
+  // Audio visualization (synchronized with audio rhythm)
+  const audioBars = Array.from({ length: 16 }, (_, i) => {
+    const barAmplitude = Math.sin(frame / 8 + i * 0.5) * 0.5 + 0.5;
+    return {
+      height: 20 + barAmplitude * 50,
+      opacity: 0.3 + barAmplitude * 0.5
     };
   });
 
   return (
     <AbsoluteFill style={{ background: '#0a0a1a' }}>
-      {/* Dynamic background with animated gradient */}
+      {/* Dynamic background with audio-reactive gradient */}
       <div
         style={{
           position: 'absolute',
           inset: 0,
-          background: `radial-gradient(ellipse at ${50 + Math.sin(frame / 50) * 25}% ${50 + Math.cos(frame / 40) * 20}%, ${brandColor}33 0%, transparent 50%),
-                      radial-gradient(ellipse at ${50 + Math.cos(frame / 45) * 30}% ${50 + Math.sin(frame / 55) * 25}%, ${secondaryColor}33 0%, transparent 50%)`,
+          background: `radial-gradient(ellipse at ${50 + audioComplex * 25}% ${50 + audioHighFreq * 20}%, ${brandColor}33 0%, transparent 50%),
+                      radial-gradient(ellipse at ${50 + audioLowFreq * 30}% ${50 + audioBeat * 25}%, ${secondaryColor}33 0%, transparent 50%)`,
         }}
       />
 
@@ -121,7 +173,9 @@ const ProfessionalVideoEditorDemoWithAudio: React.FC<Props> = ({
           opacity: advancedFadeIn(0, 30),
         }}
       >
-        {audioBars.map((bar, i) => (
+        {audioBars.map((bar, i) => {
+          const barScale = Math.sin(frame / 6 + i * 0.3) * 0.5 + 0.5;
+          return (
           <div
             key={i}
             style={{
@@ -130,22 +184,25 @@ const ProfessionalVideoEditorDemoWithAudio: React.FC<Props> = ({
               background: `linear-gradient(180deg, ${accentColor}, ${brandColor})`,
               borderRadius: 4,
               opacity: bar.opacity,
-              transform: `scaleY(${1 + Math.sin(frame / 8 + i * 0.3) * 0.2})`,
+              transform: `scaleY(${1 + barScale * 0.4})`,
               boxShadow: `0 0 10px ${accentColor}`,
             }}
           />
-        ))}
+          );
+        })}
       </div>
 
       {/* Background audio for the entire video */}
       <Audio
-        src={staticFile('audio.wav')}
+        src={staticFile('cinematic-tech-audio.mp3')}
         startFrom={0}
-        volume={0.3}
+        volume={0.4}
       />
 
-      {/* Cinematic intro */}
-      <Sequence from={0} durationInFrames={step1End}>
+
+
+      {/* Cinematic intro with slide transition */}
+      <Sequence from={0} durationInFrames={step1End + transitionFrames}>
         <div
           style={{
             position: 'absolute',
@@ -154,8 +211,7 @@ const ProfessionalVideoEditorDemoWithAudio: React.FC<Props> = ({
             flexDirection: 'column',
             justifyContent: 'center',
             alignItems: 'center',
-            opacity: advancedFadeOut(step1End - 45, step1End),
-            transform: `scale(${advancedScale(0, 45)})`,
+            transform: `translateX(${slideToRight(step1End - transitionFrames, step1End + transitionFrames)}%)`,
           }}
         >
           {/* Audio indicator */}
@@ -231,24 +287,27 @@ const ProfessionalVideoEditorDemoWithAudio: React.FC<Props> = ({
               opacity: advancedFadeIn(60, 90),
             }}
           >
-            {Array.from({ length: 5 }).map((_, i) => (
+            {Array.from({ length: 5 }).map((_, i) => {
+              const waveAmplitude = Math.sin(frame / 5 + i) * 0.5 + 0.5;
+              return (
               <div
                 key={i}
                 style={{
                   width: 4,
-                  height: 20 + Math.sin(frame / 5 + i) * 15,
+                  height: 20 + waveAmplitude * 30,
                   background: accentColor,
                   borderRadius: 2,
-                  transform: `scaleY(${1 + Math.sin(frame / 8 + i * 0.5) * 0.5})`,
+                  transform: `scaleY(${1 + waveAmplitude * 0.8})`,
                 }}
               />
-            ))}
+              );
+            })}
           </div>
         </div>
       </Sequence>
 
-      {/* Step 2: Professional video editor interface */}
-      <Sequence from={step1End} durationInFrames={step2Duration * fps}>
+      {/* Step 2: Professional video editor interface with slide transition */}
+      <Sequence from={step1End - transitionFrames} durationInFrames={step2Duration * fps + transitionFrames * 2}>
         <div
           style={{
             position: 'absolute',
@@ -258,11 +317,10 @@ const ProfessionalVideoEditorDemoWithAudio: React.FC<Props> = ({
             justifyContent: 'center',
             alignItems: 'center',
             padding: 80,
-            opacity: advancedFadeOut(step2End - 45, step2End),
-            transform: `translateY(${advancedSlideUp(step1End, step1End + 30)}px)`,
+            transform: `translateX(${slideFromLeft(step1End - transitionFrames, step1End + transitionFrames)}%)`,
           }}
         >
-          {/* Video editor interface */}
+          {/* Video editor interface with enhanced effects */}
           <div
             style={{
               background: 'rgba(15, 15, 35, 0.95)',
@@ -272,8 +330,11 @@ const ProfessionalVideoEditorDemoWithAudio: React.FC<Props> = ({
               width: '100%',
               border: `1px solid ${brandColor}44`,
               boxShadow: `0 25px 80px ${brandColor}33, inset 0 0 60px rgba(102, 126, 234, 0.1)`,
-              transform: `perspective(1000px) rotateY(${Math.sin(frame / 60) * 2}deg)`,
+              transform: `perspective(1000px) rotateY(${Math.sin(frame / 60) * 2}deg) rotateX(${Math.cos(frame / 70) * 1}deg)`,
               backdropFilter: 'blur(20px)',
+              opacity: frame < step1End 
+                ? interpolate(frame, [step1End - transitionFrames, step1End], [0, 1], { extrapolateRight: 'clamp', extrapolateLeft: 'clamp' })
+                : 1,
             }}
           >
             {/* Editor toolbar */}
@@ -421,7 +482,9 @@ editor.addAudioTrack({
                 justifyContent: 'center',
               }}
             >
-              {['L', 'R'].map((channel) => (
+              {['L', 'R'].map((channel) => {
+                const channelAmplitude = Math.sin(frame / 8 + (channel === 'L' ? 0 : 1)) * 0.5 + 0.5;
+                return (
                 <div key={channel} style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
                   <div style={{ fontSize: 12, color: 'rgba(255,255,255,0.6)', fontFamily: 'monospace' }}>
                     {channel}
@@ -442,14 +505,15 @@ editor.addAudioTrack({
                         bottom: 0,
                         left: 0,
                         right: 0,
-                        height: `${30 + Math.sin(frame / 8) * 25}%`,
+                        height: `${20 + channelAmplitude * 60}%`,
                         background: channel === 'L' ? brandColor : accentColor,
                         borderRadius: 4,
                       }}
                     />
                   </div>
                 </div>
-              ))}
+                );
+              })}
             </div>
           </div>
 
@@ -493,8 +557,8 @@ editor.addAudioTrack({
         </div>
       </Sequence>
 
-      {/* Step 3: Audio integration */}
-      <Sequence from={step2End} durationInFrames={step3Duration * fps}>
+      {/* Step 3: Audio integration with slide transition */}
+      <Sequence from={step2End - transitionFrames} durationInFrames={step3Duration * fps + transitionFrames * 2}>
         <div
           style={{
             position: 'absolute',
@@ -504,8 +568,7 @@ editor.addAudioTrack({
             justifyContent: 'center',
             alignItems: 'center',
             padding: 80,
-            opacity: advancedFadeOut(step3End - 45, step3End),
-            transform: `translateY(${advancedSlideUp(step2End, step2End + 30)}px)`,
+            transform: `translateY(${slideFromBottom(step2End - transitionFrames, step2End + transitionFrames)}%)`,
           }}
         >
           {/* Audio processing interface */}
@@ -607,7 +670,8 @@ audio → reverb → compressor → eq → output`}
               }}
             >
               {Array.from({ length: 32 }).map((_, i) => {
-                const height = 20 + Math.sin(frame / 8 + i * 0.3) * 25 + Math.random() * 15;
+                const spectrumAmplitude = Math.sin(frame / 8 + i * 0.3) * 0.5 + 0.5;
+                const height = 20 + spectrumAmplitude * 50;
                 return (
                   <div
                     key={i}
@@ -667,8 +731,8 @@ audio → reverb → compressor → eq → output`}
         </div>
       </Sequence>
 
-      {/* Step 4: Generation with audio */}
-      <Sequence from={step3End} durationInFrames={step4Duration * fps}>
+      {/* Step 4: Generation with audio with slide transition */}
+      <Sequence from={step3End - transitionFrames} durationInFrames={step4Duration * fps + transitionFrames * 2}>
         <div
           style={{
             position: 'absolute',
@@ -678,8 +742,7 @@ audio → reverb → compressor → eq → output`}
             justifyContent: 'center',
             alignItems: 'center',
             padding: 80,
-            opacity: advancedFadeOut(step4End - 45, step4End),
-            transform: `translateY(${advancedSlideUp(step3End, step3End + 30)}px)`,
+            transform: `translateX(${slideFromRight(step3End - transitionFrames, step3End + transitionFrames)}%)`,
           }}
         >
           {/* Rendering interface */}
@@ -751,7 +814,9 @@ audio → reverb → compressor → eq → output`}
                     overflow: 'hidden',
                   }}
                 >
-                  {Array.from({ length: 20 }).map((_, j) => (
+                  {Array.from({ length: 20 }).map((_, j) => {
+                    const waveformAmplitude = Math.sin(frame / 5 + i + j) * 0.5 + 0.5;
+                    return (
                     <div
                       key={j}
                       style={{
@@ -759,12 +824,13 @@ audio → reverb → compressor → eq → output`}
                         bottom: 0,
                         left: `${j * 5}%`,
                         width: '4px',
-                        height: `${10 + Math.sin(frame / 5 + i + j) * 20}%`,
+                        height: `${10 + waveformAmplitude * 40}%`,
                         background: `linear-gradient(180deg, ${secondaryColor}, ${accentColor})`,
                         borderRadius: 2,
                       }}
                     />
-                  ))}
+                    );
+                  })}
                 </div>
               ))}
             </div>
@@ -866,8 +932,8 @@ audio → reverb → compressor → eq → output`}
         </div>
       </Sequence>
 
-      {/* Step 5: Final result with audio */}
-      <Sequence from={step4End} durationInFrames={step5Duration * fps}>
+      {/* Step 5: Final result with audio with slide transition */}
+      <Sequence from={step4End - transitionFrames} durationInFrames={step5Duration * fps + transitionFrames}>
         <div
           style={{
             position: 'absolute',
@@ -876,8 +942,7 @@ audio → reverb → compressor → eq → output`}
             flexDirection: 'column',
             justifyContent: 'center',
             alignItems: 'center',
-            opacity: advancedFadeIn(step4End, step4End + 30),
-            transform: `scale(${advancedScale(step4End, step4End + 30)})`,
+            transform: `translateY(${slideFromTop(step4End - transitionFrames, step4End + transitionFrames)}%)`,
           }}
         >
           {/* Final video preview with audio */}
@@ -929,18 +994,21 @@ audio → reverb → compressor → eq → output`}
                   opacity: 0.6,
                 }}
               >
-                {Array.from({ length: 20 }).map((_, i) => (
+                {Array.from({ length: 20 }).map((_, i) => {
+                  const finalAmplitude = Math.sin(frame / 6 + i * 0.5) * 0.5 + 0.5;
+                  return (
                   <div
                     key={i}
                     style={{
                       width: 4,
-                      height: 30 + Math.sin(frame / 6 + i * 0.5) * 25,
+                      height: 30 + finalAmplitude * 40,
                       background: 'rgba(255,255,255,0.8)',
                       borderRadius: 2,
-                      transform: `scaleY(${1 + Math.sin(frame / 4 + i * 0.3) * 0.5})`,
+                      transform: `scaleY(${1 + finalAmplitude * 0.6})`,
                     }}
                   />
-                ))}
+                  );
+                })}
               </div>
 
               {/* Play button */}

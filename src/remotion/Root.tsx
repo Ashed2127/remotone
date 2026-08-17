@@ -225,7 +225,7 @@ export const RemotionRoot: React.FC = () => {
 			<Composition
 				id="ProfessionalVideoEditorDemoWithAudio"
 				component={ProfessionalVideoEditorDemoWithAudio}
-				durationInFrames={450} // 15 seconds at 30fps
+				durationInFrames={690} // 23 seconds at 30fps (extended for smooth transitions)
 				fps={30}
 				width={1920}
 				height={1080}
