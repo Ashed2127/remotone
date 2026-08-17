@@ -81,7 +81,11 @@ export class IntelligentAssetIntegration {
     });
 
     // Generate storyboard
-    const storyboard = await storyboardEngine.generateStoryboard(assetAnalyses, projectGoals);
+    const storyboard = await storyboardEngine.generateStoryboard(assetAnalyses, {
+      ...projectGoals,
+      mood: (projectGoals.mood as any) || 'professional',
+      style: (projectGoals.style as any) || 'cinematic',
+    });
 
     // Generate scene plans
     const scenePlans = await scenePlanningEngine.generateStoryboardPlans(storyboard, assetAnalyses);
@@ -553,6 +557,9 @@ export class IntelligentAssetIntegration {
     }
 
     return this.autoPlaceAsset(asset, scene, {
+      id: `scene-${Date.now()}`,
+      storyboardId: `storyboard-${Date.now()}`,
+      sceneId: `scene-${Date.now()}`,
       timeline: { totalFrames: 30, fps: 30, keyframes: [] },
       composition: { layers: [], zOrder: [] },
       camera: { position: { x: 0, y: 0, z: 0 }, rotation: { x: 0, y: 0, z: 0 }, zoom: 1, movement: [] },

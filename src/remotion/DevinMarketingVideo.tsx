@@ -584,6 +584,87 @@ const Scene4Hero: React.FC = () => {
 	);
 };
 
+// Smooth transition component for crossfading between scenes
+const SceneTransition: React.FC<{
+	children: React.ReactNode;
+	transitionType: 'fade' | 'slide' | 'zoom' | 'blur';
+	fromScene?: React.ReactNode;
+}> = ({ children, transitionType, fromScene }) => {
+	const frame = useCurrentFrame();
+	const { fps } = useVideoConfig();
+	
+	// Smooth easing function
+	const easeInOutCubic = (t: number) => t < 0.5 ? 4 * t * t * t : 1 - Math.pow(-2 * t + 2, 3) / 2;
+	
+	// Transition timing - 9 frames for smooth transition (0.3 seconds at 30fps)
+	const transitionDuration = 9;
+	const progress = Math.min(frame / transitionDuration, 1);
+	const easedProgress = easeInOutCubic(progress);
+	
+	const getIncomingStyle = () => {
+		switch (transitionType) {
+			case 'fade':
+				return {
+					opacity: interpolate(easedProgress, [0, 1], [0, 1], { extrapolateRight: 'clamp' }),
+				};
+			case 'slide':
+				return {
+					transform: `translateX(${interpolate(easedProgress, [0, 1], [100, 0], { extrapolateRight: 'clamp' })}%)`,
+				};
+			case 'zoom':
+				return {
+					transform: `scale(${interpolate(easedProgress, [0, 1], [0.85, 1], { extrapolateRight: 'clamp' })})`,
+					opacity: interpolate(easedProgress, [0, 1], [0, 1], { extrapolateRight: 'clamp' }),
+				};
+			case 'blur':
+				return {
+					filter: `blur(${interpolate(easedProgress, [0, 1], [10, 0], { extrapolateRight: 'clamp' })}px)`,
+					opacity: interpolate(easedProgress, [0, 1], [0, 1], { extrapolateRight: 'clamp' }),
+				};
+			default:
+				return {};
+		}
+	};
+	
+	const getOutgoingStyle = () => {
+		switch (transitionType) {
+			case 'fade':
+				return {
+					opacity: interpolate(easedProgress, [0, 1], [1, 0], { extrapolateRight: 'clamp' }),
+				};
+			case 'slide':
+				return {
+					transform: `translateX(${interpolate(easedProgress, [0, 1], [0, -100], { extrapolateRight: 'clamp' })}%)`,
+				};
+			case 'zoom':
+				return {
+					transform: `scale(${interpolate(easedProgress, [0, 1], [1, 1.15], { extrapolateRight: 'clamp' })})`,
+					opacity: interpolate(easedProgress, [0, 1], [1, 0], { extrapolateRight: 'clamp' }),
+				};
+			case 'blur':
+				return {
+					filter: `blur(${interpolate(easedProgress, [0, 1], [0, 10], { extrapolateRight: 'clamp' })}px)`,
+					opacity: interpolate(easedProgress, [0, 1], [1, 0], { extrapolateRight: 'clamp' }),
+				};
+			default:
+				return {};
+		}
+	};
+	
+	return (
+		<AbsoluteFill>
+			{fromScene && (
+				<AbsoluteFill style={getOutgoingStyle()}>
+					{fromScene}
+				</AbsoluteFill>
+			)}
+			<AbsoluteFill style={getIncomingStyle()}>
+				{children}
+			</AbsoluteFill>
+		</AbsoluteFill>
+	);
+};
+
 // Main Component
 export const DevinMarketingVideo: React.FC<Props> = () => {
 	return (
@@ -645,14 +726,35 @@ export const DevinMarketingVideo: React.FC<Props> = () => {
 				<Scene1Intro />
 			</Sequence>
 			
+			{/* Transition 1→2: 2.7-3 seconds (81-90 frames) */}
+			<Sequence from={81} durationInFrames={9}>
+				<SceneTransition transitionType="fade" fromScene={<Scene1Intro />}>
+					<Scene2Workspace />
+				</SceneTransition>
+			</Sequence>
+			
 			{/* Scene 2: 3-7 seconds (90-210 frames) */}
 			<Sequence from={90} durationInFrames={120}>
 				<Scene2Workspace />
 			</Sequence>
 			
+			{/* Transition 2→3: 6.7-7 seconds (201-210 frames) */}
+			<Sequence from={201} durationInFrames={9}>
+				<SceneTransition transitionType="slide" fromScene={<Scene2Workspace />}>
+					<Scene3Tasks />
+				</SceneTransition>
+			</Sequence>
+			
 			{/* Scene 3: 7-11 seconds (210-330 frames) */}
 			<Sequence from={210} durationInFrames={120}>
 				<Scene3Tasks />
+			</Sequence>
+			
+			{/* Transition 3→4: 10.7-11 seconds (321-330 frames) */}
+			<Sequence from={321} durationInFrames={9}>
+				<SceneTransition transitionType="zoom" fromScene={<Scene3Tasks />}>
+					<Scene4Hero />
+				</SceneTransition>
 			</Sequence>
 			
 			{/* Scene 4: 11-15 seconds (330-450 frames) */}

@@ -231,13 +231,13 @@ export class StoryboardEngine {
         relevantAssets.push(...assets.filter(a => a.type === 'logo' || a.type === 'svg'));
         break;
       case 'outro':
-        relevantAssets.push(...assets.filter(a => a.type === 'logo' || a.type === 'brand'));
+        relevantAssets.push(...assets.filter(a => a.type === 'logo' || a.type === 'svg'));
         break;
       case 'showcase':
         relevantAssets.push(...assets.filter(a => a.type === 'dashboard' || a.type === 'screenshot'));
         break;
       case 'highlight':
-        relevantAssets.push(...assets.filter(a => a.type === 'product' || a.type === 'feature'));
+        relevantAssets.push(...assets.filter(a => a.type === 'product' || a.type === 'screenshot'));
         break;
       default:
         relevantAssets.push(...assets.slice(startIndex, startIndex + 2));

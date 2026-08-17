@@ -204,7 +204,9 @@ export class RenderingOptimizationLayer {
     // Evict old frames if cache is full
     if (this.frameCache.size >= maxSize) {
       const oldestKey = this.frameCache.keys().next().value;
-      this.frameCache.delete(oldestKey);
+      if (oldestKey !== undefined) {
+        this.frameCache.delete(oldestKey);
+      }
     }
 
     this.frameCache.set(frameNumber, frameData);

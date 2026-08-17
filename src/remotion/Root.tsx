@@ -6,7 +6,13 @@ import {DevinInActionVideo} from './DevinInActionVideo';
 import {AppkitMotionVideo} from './AppkitMotionVideo';
 import {SaveOpenAIVideo} from './SaveOpenAIVideo';
 import {ChatGPTPromoVideo} from './ChatGPTPromoVideo';
+import {ChatGPTLaunchVideo} from './ChatGPTLaunchVideo';
+import {ChatGPTCinematicLaunch} from './ChatGPTCinematicLaunch';
 import EnhancedVideo from './EnhancedVideo';
+import {ThreeMotionVideo} from './ThreeMotionVideo';
+import RemotoneTestVideo from './RemotoneTestVideo';
+import IntegrationTutorialVideo from './IntegrationTutorialVideo';
+import ProfessionalIntegrationTutorial from './ProfessionalIntegrationTutorial';
 
 export const RemotionRoot: React.FC = () => {
 	return (
@@ -100,6 +106,28 @@ export const RemotionRoot: React.FC = () => {
 				}}
 			/>
 			<Composition
+				id="ChatGPTLaunchVideo"
+				component={ChatGPTLaunchVideo}
+				durationInFrames={600} // 20 seconds at 30fps
+				fps={30}
+				width={1920}
+				height={1080}
+				defaultProps={{
+					// Add any default props here
+				}}
+			/>
+			<Composition
+				id="ChatGPTCinematicLaunch"
+				component={ChatGPTCinematicLaunch}
+				durationInFrames={450} // 15 seconds at 30fps
+				fps={30}
+				width={1920}
+				height={1080}
+				defaultProps={{
+					// Add any default props here
+				}}
+			/>
+			<Composition
 				id="EnhancedVideo"
 				component={EnhancedVideo}
 				durationInFrames={600} // 20 seconds at 30fps
@@ -118,6 +146,63 @@ export const RemotionRoot: React.FC = () => {
 					features: [],
 					metrics: [],
 					socialLinks: [],
+				}}
+			/>
+			<Composition
+				id="ThreeMotionVideo"
+				component={ThreeMotionVideo}
+				durationInFrames={450} // 15 seconds at 30fps
+				fps={30}
+				width={1920}
+				height={1080}
+				defaultProps={{
+					// Add any default props here
+				}}
+			/>
+			<Composition
+				id="RemotoneTestVideo"
+				component={RemotoneTestVideo}
+				durationInFrames={450} // 15 seconds at 30fps
+				fps={30}
+				width={1920}
+				height={1080}
+				defaultProps={{
+					title: 'Remotone Test Video',
+					subtitle: 'AI-Powered Motion Design Engine',
+					brandColor: '#667eea',
+					secondaryColor: '#764ba2',
+				}}
+			/>
+			<Composition
+				id="IntegrationTutorialVideo"
+				component={IntegrationTutorialVideo}
+				durationInFrames={450} // 15 seconds at 30fps
+				fps={30}
+				width={1920}
+				height={1080}
+				defaultProps={{
+					productName: 'EcoBottle Pro',
+					productDescription: 'A sustainable water bottle made from recycled materials',
+					developerName: 'Developer',
+					brandColor: '#667eea',
+					secondaryColor: '#764ba2',
+					codeColor: '#1e1e1e',
+					textColor: '#ffffff',
+				}}
+			/>
+			<Composition
+				id="ProfessionalIntegrationTutorial"
+				component={ProfessionalIntegrationTutorial}
+				durationInFrames={450} // 15 seconds at 30fps
+				fps={30}
+				width={1920}
+				height={1080}
+				defaultProps={{
+					productName: 'EcoBottle Pro',
+					productDescription: 'A sustainable water bottle made from recycled materials',
+					brandColor: '#667eea',
+					secondaryColor: '#764ba2',
+					accentColor: '#00d4ff',
 				}}
 			/>
 		</>

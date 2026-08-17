@@ -1,6 +1,11 @@
-import { Clerk } from '@clerk/clerk-sdk-node';
-
-const clerk = new Clerk(process.env.CLERK_SECRET_KEY);
+// @ts-ignore - Clerk SDK is optional for this module
+let clerk: any = null;
+try {
+  const { Clerk } = require('@clerk/clerk-sdk-node');
+  clerk = new Clerk(process.env.CLERK_SECRET_KEY);
+} catch (e) {
+  console.warn('Clerk SDK not available');
+}
 
 export interface AuthUser {
   id: string;

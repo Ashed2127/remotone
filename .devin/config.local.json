@@ -12,7 +12,8 @@
       "Exec(git push)",
       "Exec(git diff)",
       "Exec(cat)",
-      "Exec(npm install)"
+      "Exec(npm install)",
+      "Exec(curl)"
     ]
   }
 }

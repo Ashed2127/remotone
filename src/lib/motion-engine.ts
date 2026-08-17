@@ -1,7 +1,7 @@
 import { z } from 'zod';
 
 export interface MotionCurve {
-  type: 'linear' | 'ease-in' | 'ease-out' | 'ease-in-out' | 'bounce' | 'elastic' | 'custom';
+  type: 'linear' | 'ease-in' | 'ease-out' | 'ease-in-out' | 'bounce' | 'elastic' | 'custom' | 'cubic-bezier' | 'smooth';
   parameters?: Record<string, number>;
 }
 
@@ -21,6 +21,7 @@ export interface MotionPath {
 export interface MotionState {
   position: { x: number; y: number; z: number };
   rotation: { x: number; y: number; z: number };
+  quaternion?: { x: number; y: number; z: number; w: number };
   scale: { x: number; y: number; z: number };
   opacity: number;
 }
@@ -136,6 +137,25 @@ export class MotionEngine {
   }
 
   /**
+   * Evaluate 3D motion with quaternion rotation
+   */
+  evaluate3DMotion(pathId: string, time: number, rotationPathId?: string): MotionState {
+    const motionState = this.evaluateMotion(pathId, time);
+    
+    if (rotationPathId) {
+      const rotationState = this.evaluateMotion(rotationPathId, time);
+      motionState.rotation = rotationState.position;
+      motionState.quaternion = this.eulerToQuaternion(
+        rotationState.position.x,
+        rotationState.position.y,
+        rotationState.position.z
+      );
+    }
+    
+    return motionState;
+  }
+
+  /**
    * Find keyframes surrounding a given time
    */
   private findSurroundingKeyframes(
@@ -205,12 +225,21 @@ export class MotionEngine {
         return this.bounceEasing(progress);
       case 'elastic':
         return this.elasticEasing(progress, curve.parameters?.tension || 1);
+      case 'smooth':
+        return this.smoothEasing(progress);
       case 'custom':
         // Custom easing could be implemented with bezier curves
         return this.cubicBezier(progress, curve.parameters);
       default:
         return progress;
     }
+  }
+
+  /**
+   * Smooth easing function (hermite interpolation)
+   */
+  private smoothEasing(progress: number): number {
+    return progress * progress * (3 - 2 * progress);
   }
 
   /**
@@ -434,9 +463,104 @@ export class MotionEngine {
     return {
       position: { x: 0, y: 0, z: 0 },
       rotation: { x: 0, y: 0, z: 0 },
+      quaternion: { x: 0, y: 0, z: 0, w: 1 },
       scale: { x: 1, y: 1, z: 1 },
       opacity: 1,
     };
+  }
+
+  /**
+   * Convert Euler angles to Quaternion
+   */
+  private eulerToQuaternion(x: number, y: number, z: number): { x: number; y: number; z: number; w: number } {
+    const cx = Math.cos(x * 0.5);
+    const cy = Math.cos(y * 0.5);
+    const cz = Math.cos(z * 0.5);
+    const sx = Math.sin(x * 0.5);
+    const sy = Math.sin(y * 0.5);
+    const sz = Math.sin(z * 0.5);
+
+    return {
+      x: sx * cy * cz - cx * sy * sz,
+      y: cx * sy * cz + sx * cy * sz,
+      z: cx * cy * sz - sx * sy * cz,
+      w: cx * cy * cz + sx * sy * sz,
+    };
+  }
+
+  /**
+   * Spherical linear interpolation for quaternions
+   */
+  private slerp(q1: { x: number; y: number; z: number; w: number }, q2: { x: number; y: number; z: number; w: number }, t: number): { x: number; y: number; z: number; w: number } {
+    let dot = q1.x * q2.x + q1.y * q2.y + q1.z * q2.z + q1.w * q2.w;
+    
+    if (dot < 0) {
+      q2 = { x: -q2.x, y: -q2.y, z: -q2.z, w: -q2.w };
+      dot = -dot;
+    }
+    
+    if (dot > 0.9995) {
+      return {
+        x: q1.x + t * (q2.x - q1.x),
+        y: q1.y + t * (q2.y - q1.y),
+        z: q1.z + t * (q2.z - q1.z),
+        w: q1.w + t * (q2.w - q1.w),
+      };
+    }
+    
+    const theta0 = Math.acos(dot);
+    const theta = theta0 * t;
+    const sinTheta = Math.sin(theta);
+    const sinTheta0 = Math.sin(theta0);
+    
+    const s0 = Math.cos(theta) - dot * sinTheta / sinTheta0;
+    const s1 = sinTheta / sinTheta0;
+    
+    return {
+      x: s0 * q1.x + s1 * q2.x,
+      y: s0 * q1.y + s1 * q2.y,
+      z: s0 * q1.z + s1 * q2.z,
+      w: s0 * q1.w + s1 * q2.w,
+    };
+  }
+
+  /**
+   * Create 3D rotation path
+   */
+  create3DRotationPath(
+    id: string,
+    rotations: Array<{ x: number; y: number; z: number; time: number }>,
+    duration: number,
+    options: { loop?: boolean; yoyo?: boolean } = {}
+  ): MotionPath {
+    const keyframes: MotionKeyframe[] = rotations.map(rot => ({
+      time: rot.time / duration,
+      value: { x: rot.x, y: rot.y, z: rot.z },
+      curve: { type: 'ease-in-out' },
+    }));
+
+    return this.createMotionPath(id, keyframes, duration, options);
+  }
+
+  /**
+   * Create 3D position path with bezier curves
+   */
+  create3DPositionPath(
+    id: string,
+    positions: Array<{ x: number; y: number; z: number; time: number }>,
+    duration: number,
+    options: { loop?: boolean; yoyo?: boolean; smoothing?: number } = {}
+  ): MotionPath {
+    const smoothing = options.smoothing || 0.5;
+    const smoothedPositions = this.smoothPath(positions, smoothing);
+    
+    const keyframes: MotionKeyframe[] = smoothedPositions.map(pos => ({
+      time: pos.time / duration,
+      value: { x: pos.x, y: pos.y, z: pos.z },
+      curve: { type: 'ease-in-out' },
+    }));
+
+    return this.createMotionPath(id, keyframes, duration, options);
   }
 
   /**

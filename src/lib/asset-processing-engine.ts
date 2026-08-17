@@ -1,5 +1,5 @@
 import sharp from 'sharp';
-import { Color } from 'color';
+import Color from 'color';
 import { createCanvas, loadImage } from 'canvas';
 
 export interface AssetAnalysis {
@@ -161,7 +161,7 @@ export class AssetProcessingEngine {
   /**
    * Extract dominant colors from an image
    */
-  private async extractDominantColors(image: sharp.Sharp, count: number): Promise<string[]> {
+  private async extractDominantColors(image: any, count: number): Promise<string[]> {
     try {
       // Resize to speed up processing
       const resized = await image.resize(100, 100, { fit: 'cover' }).raw().toBuffer();
@@ -206,7 +206,7 @@ export class AssetProcessingEngine {
   /**
    * Calculate overall image brightness
    */
-  private calculateBrightness(stats: sharp.Stats): number {
+  private calculateBrightness(stats: any): number {
     const { r, g, b } = stats.channels;
     const avgR = r.mean;
     const avgG = g.mean;
@@ -219,7 +219,7 @@ export class AssetProcessingEngine {
   /**
    * Calculate image contrast
    */
-  private calculateContrast(stats: sharp.Stats): number {
+  private calculateContrast(stats: any): number {
     const { r, g, b } = stats.channels;
     const stdDevR = r.stdev;
     const stdDevG = g.stdev;
@@ -231,7 +231,7 @@ export class AssetProcessingEngine {
   /**
    * Calculate image complexity based on edge detection
    */
-  private async calculateComplexity(image: sharp.Sharp): Promise<number> {
+  private async calculateComplexity(image: any): Promise<number> {
     try {
       const resized = await image.resize(200, 200, { fit: 'cover' }).greyscale().raw().toBuffer();
       const width = 200;
@@ -267,7 +267,7 @@ export class AssetProcessingEngine {
    */
   private determineAssetType(
     imagePath: string,
-    metadata: sharp.Metadata,
+    metadata: any,
     dominantColors: string[],
     complexity: number
   ): AssetAnalysis['type'] {
@@ -313,7 +313,7 @@ export class AssetProcessingEngine {
   /**
    * Detect text regions in image (simplified)
    */
-  private async detectTextRegions(image: sharp.Sharp): Promise<number> {
+  private async detectTextRegions(image: any): Promise<number> {
     try {
       const resized = await image.resize(300, 300, { fit: 'cover' }).raw().toBuffer();
       // This is a simplified text detection
@@ -328,8 +328,8 @@ export class AssetProcessingEngine {
    * Calculate overall quality score
    */
   private calculateQualityScore(
-    metadata: sharp.Metadata,
-    stats: sharp.Stats,
+    metadata: any,
+    stats: any,
     complexity: number
   ): number {
     let score = 0.5;

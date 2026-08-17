@@ -3,7 +3,7 @@ import { z } from 'zod';
 export interface TransitionConfig {
   type: 'fade' | 'slide' | 'zoom' | 'wipe' | 'dissolve' | 'morph' | 'glitch' | 'particle' | 'mask' | '3d-flip' | 'cube-rotate';
   duration: number;
-  easing: 'linear' | 'ease-in' | 'ease-out' | 'ease-in-out' | 'bounce' | 'elastic';
+  easing: 'linear' | 'ease-in' | 'ease-out' | 'ease-in-out' | 'bounce' | 'elastic' | 'smooth';
   direction?: 'up' | 'down' | 'left' | 'right' | 'in' | 'out' | 'random';
   parameters?: Record<string, any>;
 }
@@ -141,7 +141,7 @@ export class TransitionEngine {
     this.registerTransition({
       id: 'mask',
       name: 'Mask',
-      config: { type: 'mask', duration: 0.8, easing: 'ease-in-out', direction: 'circle' },
+      config: { type: 'mask', duration: 0.8, easing: 'ease-in-out', direction: 'in' },
       render: (progress, from, to) => ({
         fromMask: `radial-gradient(circle at 50% 50%, transparent ${progress * 50}%, black ${progress * 50 + 1}%)`,
         toMask: `radial-gradient(circle at 50% 50%, black ${(1 - progress) * 50}%, transparent ${(1 - progress) * 50 + 1}%)`,
@@ -256,6 +256,8 @@ export class TransitionEngine {
         return this.bounceEasing(progress);
       case 'elastic':
         return this.elasticEasing(progress);
+      case 'smooth':
+        return progress * progress * (3 - 2 * progress);
       default:
         return progress;
     }
