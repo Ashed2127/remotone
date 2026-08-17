@@ -311,6 +311,62 @@ export class RemotoneAgent {
   }
 
   /**
+   * Generate audio for video
+   */
+  async generateAudio(options: {
+    type: 'music' | 'sfx' | 'ambient' | 'voiceover' | 'custom';
+    duration: number;
+    mood?: 'energetic' | 'calm' | 'dramatic' | 'professional' | 'playful' | 'mysterious';
+    style?: 'minimal' | 'rich' | 'experimental' | 'cinematic';
+    engine?: 'professional' | 'faust' | 'tonejs' | 'hybrid';
+    parameters?: Record<string, number>;
+  }): Promise<{
+    success: boolean;
+    audioId?: string;
+    audioData?: {
+      sampleRate: number;
+      channels: number;
+      duration: number;
+    };
+    engine?: string;
+    error?: string;
+  }> {
+    try {
+      const response = await this.makeRequest(
+        '/api/agent/audio',
+        'POST',
+        options
+      );
+      return response;
+    } catch (error) {
+      throw this.handleError(error);
+    }
+  }
+
+  /**
+   * Get audio engine capabilities
+   */
+  async getAudioCapabilities(): Promise<{
+    engines: string[];
+    engineCapabilities: Record<string, any>;
+    supportedTypes: string[];
+    supportedMoods: string[];
+    supportedStyles: string[];
+    maxDuration: number;
+    features: string[];
+  }> {
+    try {
+      const response = await this.makeRequest(
+        '/api/agent/audio',
+        'GET'
+      );
+      return response;
+    } catch (error) {
+      throw this.handleError(error);
+    }
+  }
+
+  /**
    * Make HTTP request to Remotone API
    */
   private async makeRequest<T>(

@@ -9,6 +9,11 @@ export { audioEngine, AudioEngine } from './audio-engine';
 export { renderingOptimizationLayer, RenderingOptimizationLayer } from './rendering-optimization-layer';
 export { intelligentAssetIntegration, IntelligentAssetIntegration } from './intelligent-asset-integration';
 
+// Export professional audio engines
+export { professionalAudioEngine, ProfessionalAudioEngine } from './professional-audio-engine';
+export { faustIntegration, FaustIntegration } from './faust-integration';
+export { audioIntegrationLayer, AudioIntegrationLayer } from './audio-integration-layer';
+
 // Export Three.js motion components
 export {
   useMotionAnimation,
@@ -47,3 +52,6 @@ export type { RenderConfig, OptimizationStrategy, RenderMetrics, RenderTarget } 
 export type { AssetIntegrationConfig, IntegratedScene } from './intelligent-asset-integration';
 export type { CameraWaypoint, CameraAnimationConfig } from './camera-animation-system';
 export type { ParticleConfig, Particle } from './3d-particle-system';
+export type { ProfessionalAudioConfig, SynthConfig, DSPConfig } from './professional-audio-engine';
+export type { FaustConfig, FaustDSP } from './faust-integration';
+export type { AudioGenerationRequest, AudioGenerationResponse } from './audio-integration-layer';

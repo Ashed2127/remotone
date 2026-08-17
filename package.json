@@ -40,7 +40,11 @@
     "video:tutorial:render": "remotion render src/remotion/index.ts IntegrationTutorialVideo integration-tutorial-video.mp4",
     "video:tutorial:preview": "remotion render src/remotion/index.ts IntegrationTutorialVideo integration-tutorial-video.mp4 --preview",
     "video:professional:render": "remotion render src/remotion/index.ts ProfessionalIntegrationTutorial professional-integration-tutorial.mp4",
-    "video:professional:preview": "remotion render src/remotion/index.ts ProfessionalIntegrationTutorial professional-integration-tutorial.mp4 --preview"
+    "video:professional:preview": "remotion render src/remotion/index.ts ProfessionalIntegrationTutorial professional-integration-tutorial.mp4 --preview",
+    "video:editor:render": "remotion render src/remotion/index.ts ProfessionalVideoEditorDemo professional-video-editor-demo.mp4",
+    "video:editor:preview": "remotion render src/remotion/index.ts ProfessionalVideoEditorDemo professional-video-editor-demo.mp4 --preview",
+    "video:editor:audio:render": "remotion render src/remotion/index.ts ProfessionalVideoEditorDemoWithAudio professional-video-editor-demo-with-audio.mp4",
+    "video:editor:audio:preview": "remotion render src/remotion/index.ts ProfessionalVideoEditorDemoWithAudio professional-video-editor-demo-with-audio.mp4 --preview"
   },
   "keywords": [],
   "author": "",

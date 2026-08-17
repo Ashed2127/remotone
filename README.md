@@ -278,8 +278,10 @@ The Remotone Agent SDK provides:
 - `generateProductVideo()` - Specialized product promotion videos
 - `generateSocialVideo()` - Platform-optimized social media videos
 - `generateTutorialVideo()` - Step-by-step tutorial videos
+- `generateAudio()` - Generate professional audio for videos
 - `waitForRender()` - Monitor render progress
 - `getCapabilities()` - Query system capabilities
+- `getAudioCapabilities()` - Query audio engine capabilities
 
 ### Documentation
 
@@ -289,6 +291,8 @@ For detailed AI agent integration documentation, see <ref_file file="/home/ashed
 
 - `POST /api/agent/generate` - Generate video timelines
 - `GET /api/agent/capabilities` - Get system capabilities
+- `POST /api/agent/audio` - Generate professional audio
+- `GET /api/agent/audio` - Get audio engine capabilities
 - `GET /api/render?id={jobId}` - Check render status
 
 ## Documentation

@@ -13,6 +13,8 @@ import {ThreeMotionVideo} from './ThreeMotionVideo';
 import RemotoneTestVideo from './RemotoneTestVideo';
 import IntegrationTutorialVideo from './IntegrationTutorialVideo';
 import ProfessionalIntegrationTutorial from './ProfessionalIntegrationTutorial';
+import ProfessionalVideoEditorDemo from './ProfessionalVideoEditorDemo';
+import ProfessionalVideoEditorDemoWithAudio from './ProfessionalVideoEditorDemoWithAudio';
 
 export const RemotionRoot: React.FC = () => {
 	return (
@@ -200,6 +202,36 @@ export const RemotionRoot: React.FC = () => {
 				defaultProps={{
 					productName: 'EcoBottle Pro',
 					productDescription: 'A sustainable water bottle made from recycled materials',
+					brandColor: '#667eea',
+					secondaryColor: '#764ba2',
+					accentColor: '#00d4ff',
+				}}
+			/>
+			<Composition
+				id="ProfessionalVideoEditorDemo"
+				component={ProfessionalVideoEditorDemo}
+				durationInFrames={450} // 15 seconds at 30fps
+				fps={30}
+				width={1920}
+				height={1080}
+				defaultProps={{
+					productName: 'Remotone',
+					tagline: 'AI-Powered Motion Design Engine',
+					brandColor: '#667eea',
+					secondaryColor: '#764ba2',
+					accentColor: '#00d4ff',
+				}}
+			/>
+			<Composition
+				id="ProfessionalVideoEditorDemoWithAudio"
+				component={ProfessionalVideoEditorDemoWithAudio}
+				durationInFrames={450} // 15 seconds at 30fps
+				fps={30}
+				width={1920}
+				height={1080}
+				defaultProps={{
+					productName: 'Remotone',
+					tagline: 'AI-Powered Motion Design Engine',
 					brandColor: '#667eea',
 					secondaryColor: '#764ba2',
 					accentColor: '#00d4ff',
