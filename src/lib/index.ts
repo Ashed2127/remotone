@@ -158,3 +158,15 @@ export {
   ErrorResponses
 } from './api-response';
 export type { ApiResponse, ApiError, ApiMetadata } from './api-response';
+
+// Export agent error handler
+export {
+  AgentErrorHandler,
+  agentErrorHandler,
+  handleAgentError,
+  formatAgentError,
+  createValidationErrors,
+  agentErrorToApiError,
+  agentErrorToApiResponse
+} from './agent-error-handler';
+export type { AgentError } from './agent-error-handler';
