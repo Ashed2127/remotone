@@ -55,3 +55,106 @@ export type { ParticleConfig, Particle } from './3d-particle-system';
 export type { ProfessionalAudioConfig, SynthConfig, DSPConfig } from './professional-audio-engine';
 export type { FaustConfig, FaustDSP } from './faust-integration';
 export type { AudioGenerationRequest, AudioGenerationResponse } from './audio-integration-layer';
+
+// Export CQRS pattern modules
+export { CommandHandler, getCommandHandler } from './cqrs/command-handler';
+export { QueryHandler, getQueryHandler } from './cqrs/query-handler';
+export type {
+  CreateTimelineCommand,
+  UpdateTimelineCommand,
+  StartRenderCommand,
+  UploadAssetCommand,
+  StartAiGenerationCommand
+} from './cqrs/command-handler';
+export type {
+  GetTimelineQuery,
+  ListTimelinesQuery,
+  GetRenderJobQuery,
+  ListRenderJobsQuery,
+  GetAssetQuery,
+  ListAssetsQuery,
+  GetSystemCapabilitiesQuery
+} from './cqrs/query-handler';
+
+// Export event system modules
+export { EventBus, getEventBus, createEvent } from './events/event-bus';
+export type { EventHandler, EventSubscription } from './events/event-bus';
+export type {
+  DomainEvent,
+  BaseEvent,
+  TimelineCreatedEventSchema,
+  TimelineUpdatedEventSchema,
+  TimelineDeletedEventSchema,
+  TimelineValidatedEventSchema,
+  RenderStartedEventSchema,
+  RenderProgressEventSchema,
+  RenderCompletedEventSchema,
+  RenderFailedEventSchema,
+  AssetUploadedEventSchema,
+  AssetProcessedEventSchema,
+  AssetDeletedEventSchema,
+  AiGenerationStartedEventSchema,
+  AiGenerationProgressEventSchema,
+  AiGenerationCompletedEventSchema,
+  AiGenerationFailedEventSchema,
+  AudioGeneratedEventSchema,
+  AudioProcessingFailedEventSchema,
+  UserCreatedEventSchema,
+  UserQuotaExceededEventSchema,
+  SystemErrorEventSchema,
+  ServiceDegradedEventSchema,
+  EventCategories,
+  EventCategory
+} from './events/event-types';
+
+// Export core functional modules
+export {
+  validateRenderConfig,
+  getResolutionDimensions,
+  calculateTotalFrames,
+  estimateRenderTime,
+  estimateOutputFileSize,
+  calculateRenderProgress,
+  getRenderStage,
+  suggestRenderOptimizations,
+  optimizeRenderConfig,
+  validateTimelineForRender,
+  checkRenderCompatibility,
+  generateRenderMetadata,
+  formatRenderStatistics
+} from './core/render-core';
+export type { RenderConfig, RenderProgress } from './core/render-core';
+
+export {
+  validateTimelineStructure,
+  validateTimelineDuration,
+  validateNodeTiming,
+  detectNodeOverlaps,
+  calculateTimelineDuration,
+  calculateNodeDensity,
+  getNodesAtTime,
+  getNodesInRange,
+  scaleTimelineDuration,
+  shiftTimelineNodes,
+  removeNode,
+  addNode,
+  updateNode,
+  reorderNodes,
+  analyzeTimelineComposition,
+  calculateTimelineComplexity,
+  suggestTimelineOptimizations,
+  exportTimelineCompact,
+  importTimelineCompact,
+  timelineToSummary
+} from './core/timeline-core';
+
+// Export API response utilities
+export {
+  createSuccessResponse,
+  createErrorResponse,
+  withProcessingTime,
+  validateWithSchema,
+  ErrorCodes,
+  ErrorResponses
+} from './api-response';
+export type { ApiResponse, ApiError, ApiMetadata } from './api-response';
