@@ -9,7 +9,7 @@
  */
 
 import { z } from 'zod';
-import { Timeline } from '../types/timeline';
+import { Timeline } from '@/types/timeline';
 
 // ============================================================================
 // RENDER CONFIGURATION

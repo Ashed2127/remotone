@@ -9,7 +9,7 @@
  */
 
 import { z } from 'zod';
-import { Timeline, TimelineNode, validateTimeline } from '../types/timeline';
+import { Timeline, TimelineNode, validateTimeline } from '@/types/timeline';
 
 // ============================================================================
 // TIMELINE VALIDATION

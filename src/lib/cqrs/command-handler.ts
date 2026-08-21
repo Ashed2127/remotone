@@ -14,7 +14,7 @@ import {
   AssetUploadedEventSchema,
   AiGenerationStartedEventSchema
 } from '../events/event-types';
-import { validateTimeline } from '../types/timeline';
+import { validateTimeline } from '@/types/timeline';
 import { createErrorResponse, createSuccessResponse, ErrorCodes, withProcessingTime } from '../api-response';
 
 // ============================================================================
