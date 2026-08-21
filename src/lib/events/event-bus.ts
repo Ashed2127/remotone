@@ -5,7 +5,7 @@
  * Uses Redis for distributed event streaming.
  */
 
-import { Redis } from 'ioredis';
+import Redis from 'ioredis';
 import { DomainEvent, EventCategories, EventCategory } from './event-types';
 
 export interface EventHandler {
