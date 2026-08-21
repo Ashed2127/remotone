@@ -1,9 +1,12 @@
 /**
  * Agent-Friendly Error Handler
- * 
+ *
  * Provides comprehensive error handling and feedback specifically designed for AI agents.
  * Errors are structured to be easily parseable and actionable by AI systems.
+ * Now integrated with standardized API response format.
  */
+
+import { createErrorResponse, ErrorCodes, type ApiError } from './api-response';
 
 export interface AgentError {
   code: string;
@@ -28,7 +31,7 @@ export class AgentErrorHandler {
   private initializeErrorPatterns() {
     // Validation errors
     this.errorPatterns.set('validation', (error) => ({
-      code: 'VALIDATION_ERROR',
+      code: ErrorCodes.VALIDATION_ERROR,
       message: error.message || 'Input validation failed',
       field: error.field,
       suggestion: this.getSuggestionForField(error.field),
@@ -38,7 +41,7 @@ export class AgentErrorHandler {
 
     // Rate limit errors
     this.errorPatterns.set('rate_limit', (error) => ({
-      code: 'RATE_LIMIT_EXCEEDED',
+      code: ErrorCodes.RATE_LIMIT_EXCEEDED,
       message: 'API rate limit exceeded',
       suggestion: 'Wait before making more requests or implement exponential backoff',
       context: {
@@ -50,7 +53,7 @@ export class AgentErrorHandler {
 
     // Authentication errors
     this.errorPatterns.set('auth', (error) => ({
-      code: 'AUTHENTICATION_ERROR',
+      code: ErrorCodes.UNAUTHORIZED,
       message: 'Authentication failed',
       suggestion: 'Check your API key and ensure it is valid',
       recoverable: false,
@@ -59,7 +62,7 @@ export class AgentErrorHandler {
 
     // Timeline generation errors
     this.errorPatterns.set('timeline_generation', (error) => ({
-      code: 'TIMELINE_GENERATION_FAILED',
+      code: ErrorCodes.INVALID_TIMELINE,
       message: 'Failed to generate video timeline',
       suggestion: 'Try rephrasing your prompt or providing more specific details',
       context: {
@@ -72,7 +75,7 @@ export class AgentErrorHandler {
 
     // Render job errors
     this.errorPatterns.set('render_job', (error) => ({
-      code: 'RENDER_JOB_FAILED',
+      code: ErrorCodes.RENDER_FAILED,
       message: 'Video rendering failed',
       suggestion: 'Check the timeline for complex elements that might cause rendering issues',
       context: {
@@ -85,7 +88,7 @@ export class AgentErrorHandler {
 
     // Asset errors
     this.errorPatterns.set('asset', (error) => ({
-      code: 'ASSET_ERROR',
+      code: ErrorCodes.ASSET_PROCESSING_FAILED,
       message: 'Asset processing failed',
       field: error.assetUrl ? 'assetUrl' : undefined,
       suggestion: 'Ensure the asset URL is accessible and the file format is supported',
@@ -99,7 +102,7 @@ export class AgentErrorHandler {
 
     // Network errors
     this.errorPatterns.set('network', (error) => ({
-      code: 'NETWORK_ERROR',
+      code: ErrorCodes.EXTERNAL_SERVICE_ERROR,
       message: 'Network connection failed',
       suggestion: 'Check your internet connection and try again',
       recoverable: true,
@@ -108,7 +111,7 @@ export class AgentErrorHandler {
 
     // Timeout errors
     this.errorPatterns.set('timeout', (error) => ({
-      code: 'TIMEOUT_ERROR',
+      code: ErrorCodes.TIMEOUT,
       message: 'Request timed out',
       suggestion: 'The operation took too long. Try with a shorter video or simpler content',
       context: {
@@ -120,7 +123,7 @@ export class AgentErrorHandler {
 
     // Database errors
     this.errorPatterns.set('database', (error) => ({
-      code: 'DATABASE_ERROR',
+      code: ErrorCodes.INTERNAL_ERROR,
       message: 'Database operation failed',
       suggestion: 'Internal system error. Please try again later',
       recoverable: false,
@@ -129,7 +132,7 @@ export class AgentErrorHandler {
 
     // AI service errors
     this.errorPatterns.set('ai_service', (error) => ({
-      code: 'AI_SERVICE_ERROR',
+      code: ErrorCodes.AI_SERVICE_ERROR,
       message: 'AI service unavailable',
       suggestion: 'The AI service is temporarily unavailable. Please try again later',
       recoverable: true,
@@ -205,7 +208,7 @@ export class AgentErrorHandler {
    */
   private createDefaultError(error: unknown): AgentError {
     return {
-      code: 'UNKNOWN_ERROR',
+      code: ErrorCodes.INTERNAL_ERROR,
       message: error instanceof Error ? error.message : 'An unknown error occurred',
       suggestion: 'Please try again or contact support if the issue persists',
       recoverable: true,
@@ -244,7 +247,7 @@ export class AgentErrorHandler {
    */
   createValidationErrors(errors: Array<{ field: string; message: string }>): AgentError[] {
     return errors.map(err => ({
-      code: 'VALIDATION_ERROR',
+      code: ErrorCodes.VALIDATION_ERROR,
       message: err.message,
       field: err.field,
       suggestion: this.getSuggestionForField(err.field),
@@ -312,16 +315,38 @@ export class AgentErrorHandler {
    */
   getErrorSummary(error: AgentError): string {
     let summary = `[${error.code}] ${error.message}`;
-    
+
     if (error.field) {
       summary += ` (Field: ${error.field})`;
     }
-    
+
     if (error.suggestion) {
       summary += `\nSuggestion: ${error.suggestion}`;
     }
-    
+
     return summary;
+  }
+
+  /**
+   * Convert AgentError to standardized ApiError format
+   */
+  toApiError(agentError: AgentError): ApiError {
+    return {
+      code: agentError.code,
+      message: agentError.message,
+      suggestions: agentError.suggestion ? [agentError.suggestion] : [],
+      context: agentError.context
+    };
+  }
+
+  /**
+   * Convert AgentError to standardized API response
+   */
+  toApiResponse(agentError: AgentError, metadata?: any): any {
+    return createErrorResponse(
+      this.toApiError(agentError),
+      metadata
+    );
   }
 }
 
@@ -339,4 +364,13 @@ export function formatAgentError(error: AgentError | AgentError[]): any {
 
 export function createValidationErrors(errors: Array<{ field: string; message: string }>): AgentError[] {
   return agentErrorHandler.createValidationErrors(errors);
+}
+
+// New convenience functions for API response integration
+export function agentErrorToApiError(agentError: AgentError): ApiError {
+  return agentErrorHandler.toApiError(agentError);
+}
+
+export function agentErrorToApiResponse(agentError: AgentError, metadata?: any): any {
+  return agentErrorHandler.toApiResponse(agentError, metadata);
 }
