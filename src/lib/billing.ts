@@ -1,4 +1,5 @@
 import Stripe from 'stripe';
+import { handleAgentError } from './agent-error-handler';
 
 const stripe = new Stripe(process.env.STRIPE_SECRET_KEY || '', {
   apiVersion: '2026-06-24.dahlia',
@@ -25,24 +26,30 @@ export async function createCheckoutSession(
   successUrl: string,
   cancelUrl: string
 ): Promise<string> {
-  const session = await stripe.checkout.sessions.create({
-    customer: customerId,
-    payment_method_types: ['card'],
-    line_items: [
-      {
-        price: BILLING_CONFIG.priceId,
-        quantity: creditAmount,
+  try {
+    const session = await stripe.checkout.sessions.create({
+      customer: customerId,
+      payment_method_types: ['card'],
+      line_items: [
+        {
+          price: BILLING_CONFIG.priceId,
+          quantity: creditAmount,
+        },
+      ],
+      mode: 'payment',
+      success_url: successUrl,
+      cancel_url: cancelUrl,
+      metadata: {
+        creditAmount: creditAmount.toString(),
       },
-    ],
-    mode: 'payment',
-    success_url: successUrl,
-    cancel_url: cancelUrl,
-    metadata: {
-      creditAmount: creditAmount.toString(),
-    },
-  });
+    });
 
-  return session.url || '';
+    return session.url || '';
+  } catch (error) {
+    const agentError = handleAgentError(error);
+    console.error('Checkout session creation error:', agentError);
+    throw error;
+  }
 }
 
 /**
@@ -52,12 +59,18 @@ export async function createCustomer(
   email: string,
   name?: string
 ): Promise<string> {
-  const customer = await stripe.customers.create({
-    email,
-    name,
-  });
+  try {
+    const customer = await stripe.customers.create({
+      email,
+      name,
+    });
 
-  return customer.id;
+    return customer.id;
+  } catch (error) {
+    const agentError = handleAgentError(error);
+    console.error('Customer creation error:', agentError);
+    throw error;
+  }
 }
 
 /**
@@ -68,29 +81,41 @@ export async function recordUsage(
   renderJobId: string,
   amount: number
 ): Promise<void> {
-  const { pool } = await import('./db');
+  try {
+    const { pool } = await import('./db');
 
-  // Record usage in database
-  await pool.query(
-    `INSERT INTO usage_records (org_id, render_job_id, amount, quantity, unit)
-     VALUES ($1, $2, $3, 1, 'render_job')`,
-    [orgId, renderJobId, amount]
-  );
+    // Record usage in database
+    await pool.query(
+      `INSERT INTO usage_records (org_id, render_job_id, amount, quantity, unit)
+       VALUES ($1, $2, $3, 1, 'render_job')`,
+      [orgId, renderJobId, amount]
+    );
 
-  // In production, this would report usage to Stripe for metered billing
-  // For the render credits model, we deduct from prepaid credits instead
-  await deductRenderCredits(orgId, 1);
+    // In production, this would report usage to Stripe for metered billing
+    // For the render credits model, we deduct from prepaid credits instead
+    await deductRenderCredits(orgId, 1);
+  } catch (error) {
+    const agentError = handleAgentError(error);
+    console.error('Usage recording error:', agentError);
+    throw error;
+  }
 }
 
 /**
  * Deduct render credits from organization
  */
 async function deductRenderCredits(orgId: string, credits: number): Promise<void> {
-  const { pool } = await import('./db');
+  try {
+    const { pool } = await import('./db');
 
-  // This would be implemented with a credits table or Stripe subscription
-  // For now, we'll just log the deduction
-  console.log(`Deducting ${credits} render credits from org ${orgId}`);
+    // This would be implemented with a credits table or Stripe subscription
+    // For now, we'll just log the deduction
+    console.log(`Deducting ${credits} render credits from org ${orgId}`);
+  } catch (error) {
+    const agentError = handleAgentError(error);
+    console.error('Credit deduction error:', agentError);
+    throw error;
+  }
 }
 
 /**
@@ -108,22 +133,28 @@ export async function getCreditBalance(orgId: string): Promise<number> {
  * Handle Stripe webhook events
  */
 export async function handleStripeWebhook(event: Stripe.Event): Promise<void> {
-  switch (event.type) {
-    case 'checkout.session.completed':
-      const session = event.data.object as Stripe.Checkout.Session;
-      await handleCheckoutCompleted(session);
-      break;
-    case 'invoice.payment_succeeded':
-      const invoice = event.data.object as Stripe.Invoice;
-      await handleInvoicePaymentSucceeded(invoice);
-      break;
-    case 'customer.subscription.created':
-    case 'customer.subscription.updated':
-      const subscription = event.data.object as Stripe.Subscription;
-      await handleSubscriptionChange(subscription);
-      break;
-    default:
-      console.log(`Unhandled event type: ${event.type}`);
+  try {
+    switch (event.type) {
+      case 'checkout.session.completed':
+        const session = event.data.object as Stripe.Checkout.Session;
+        await handleCheckoutCompleted(session);
+        break;
+      case 'invoice.payment_succeeded':
+        const invoice = event.data.object as Stripe.Invoice;
+        await handleInvoicePaymentSucceeded(invoice);
+        break;
+      case 'customer.subscription.created':
+      case 'customer.subscription.updated':
+        const subscription = event.data.object as Stripe.Subscription;
+        await handleSubscriptionChange(subscription);
+        break;
+      default:
+        console.log(`Unhandled event type: ${event.type}`);
+    }
+  } catch (error) {
+    const agentError = handleAgentError(error);
+    console.error('Stripe webhook handling error:', agentError);
+    throw error;
   }
 }
 
@@ -168,27 +199,39 @@ export async function createSubscription(
   customerId: string,
   priceId: string
 ): Promise<string> {
-  const subscription = await stripe.subscriptions.create({
-    customer: customerId,
-    items: [
-      {
-        price: priceId,
+  try {
+    const subscription = await stripe.subscriptions.create({
+      customer: customerId,
+      items: [
+        {
+          price: priceId,
+        },
+      ],
+      payment_behavior: 'default_incomplete',
+      payment_settings: {
+        payment_method_types: ['card'],
+        save_default_payment_method: 'on_subscription',
       },
-    ],
-    payment_behavior: 'default_incomplete',
-    payment_settings: {
-      payment_method_types: ['card'],
-      save_default_payment_method: 'on_subscription',
-    },
-    expand: ['latest_invoice.payment_intent'],
-  });
+      expand: ['latest_invoice.payment_intent'],
+    });
 
-  return subscription.id;
+    return subscription.id;
+  } catch (error) {
+    const agentError = handleAgentError(error);
+    console.error('Subscription creation error:', agentError);
+    throw error;
+  }
 }
 
 /**
  * Cancel a subscription
  */
 export async function cancelSubscription(subscriptionId: string): Promise<void> {
-  await stripe.subscriptions.cancel(subscriptionId);
+  try {
+    await stripe.subscriptions.cancel(subscriptionId);
+  } catch (error) {
+    const agentError = handleAgentError(error);
+    console.error('Subscription cancellation error:', agentError);
+    throw error;
+  }
 }
